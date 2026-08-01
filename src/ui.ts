@@ -3,7 +3,7 @@ import { EditorState, Range, StateEffect, StateField, type Extension } from '@co
 import { Decoration, type DecorationSet } from '@codemirror/view'
 import { json } from '@codemirror/lang-json'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { extractCcmod, type ExtractCcmodError } from './zip'
+import { extractCCMod, type ExtractCcmodError } from './zip'
 import { run } from './main'
 
 // this is vibe coded af
@@ -193,7 +193,7 @@ fileInput.addEventListener('change', async () => {
 
     if (file.name.endsWith('.zip') || file.name.endsWith('.ccmod')) {
         const isCCMod = file.name.endsWith('.ccmod')
-        const result = extractCcmod(data, isCCMod)
+        const result = extractCCMod(data, isCCMod)
         if (!result.ok) {
             appendConsole(`[ui] \x1b[31m\u2717 ${EXTRACT_ERROR_MESSAGES[result.error]} in ${file.name}\x1b[0m`)
             return
