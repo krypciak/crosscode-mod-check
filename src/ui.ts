@@ -1,18 +1,19 @@
 import { EditorView, basicSetup } from 'codemirror'
-import { EditorState, Range, StateEffect, StateField } from '@codemirror/state'
+import { EditorState, Range, StateEffect, StateField, type Extension } from '@codemirror/state'
 import { Decoration, type DecorationSet } from '@codemirror/view'
 import { json } from '@codemirror/lang-json'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { unzipSync } from 'fflate'
 import { run } from './main'
 
+// this is vibe coded af
+
 const consoleMount = document.querySelector<HTMLDivElement>('#console-output')!
 const inputMount = document.querySelector<HTMLDivElement>('#input-code')!
 const uploadBtn = document.querySelector<HTMLButtonElement>('#upload-btn')!
 const fileInput = document.querySelector<HTMLInputElement>('#file-input')!
-export const runBtn = document.querySelector<HTMLButtonElement>('#run-btn')!
 
-function createEditor(parent: HTMLElement, editable: boolean, doc: string = ''): EditorView {
+function createEditor(parent: HTMLElement, editable: boolean, doc: string = '', extensions: Extension[] = []): EditorView {
     return new EditorView({
         state: EditorState.create({
             doc,
@@ -25,14 +26,23 @@ function createEditor(parent: HTMLElement, editable: boolean, doc: string = ''):
                     '&': { height: '100%' },
                     '.cm-scroller': { overflow: 'auto' },
                 }),
+                ...extensions,
             ],
         }),
         parent,
     })
 }
 
+let autoRunTimer: ReturnType<typeof setTimeout> | undefined
+const inputEditor = createEditor(inputMount, true, '', [
+    EditorView.updateListener.of(update => {
+        if (update.docChanged) {
+            clearTimeout(autoRunTimer)
+            autoRunTimer = setTimeout(() => run(), 500)
+        }
+    }),
+])
 const consoleEditor = createEditor(consoleMount, false)
-const inputEditor = createEditor(inputMount, true)
 
 const addConsoleDecorations = StateEffect.define<Range<Decoration>[]>()
 const consoleDecorations = StateField.define<DecorationSet>({
@@ -191,5 +201,3 @@ fileInput.addEventListener('change', async () => {
 export function getCodeInputString() {
     return inputEditor.state.doc.toString().trim()
 }
-
-runBtn.addEventListener('click', () => run())

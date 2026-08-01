@@ -4,30 +4,39 @@
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>crosscode-mod-check</title>
+        <title>Crosscode .ccmod check</title>
         <meta name="darkreader-lock" />
     </head>
     <body>
         <main id="app">
             <header>
-                <a
-                    class="gh-badge"
-                    href="https://github.com/krypciak/crosscode-mod-check"
-                    target="_blank"
-                    rel="noopener"
-                >
-                    <img src="https://img.shields.io/badge/github-repository-181717?logo=github" alt="GitHub" />
-                </a>
+                <div class="header-actions">
+                    <label>ccmod.json (input)</label>
+                    <button id="upload-btn">upload .zip / .ccmod</button>
+                </div>
+                <div class="header-actions">
+                    <a
+                        href="https://github.com/CCDirectLink/CCModDB/blob/master/docs/CCMOD-STANDARD.md"
+                        target="_blank"
+                        rel="noopener"
+                        class="docs-link"
+                    >
+                        CCMOD standard
+                    </a>
+                    <a
+                        class="gh-badge"
+                        href="https://github.com/krypciak/crosscode-mod-check"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <img src="https://img.shields.io/badge/github-repository-181717?logo=github" alt="GitHub" />
+                    </a>
+                </div>
+                <input type="file" id="file-input" accept=".zip,.ccmod,.json" hidden />
             </header>
             <div class="panels">
                 <section class="panel">
-                    <label>ccmod.json (input)</label>
                     <div id="input-code" class="editor-mount"></div>
-                    <div class="row">
-                        <button id="upload-btn">upload .zip / .ccmod</button>
-                        <button id="run-btn">run</button>
-                        <input type="file" id="file-input" accept=".zip,.ccmod,.json" hidden />
-                    </div>
                 </section>
             </div>
 

@@ -3,7 +3,7 @@ import './style.css'
 import './ui'
 import { CCModChecker } from 'ccmoddb/build/tests/ccmod-check'
 import { expect, test } from './test-functions'
-import { appendConsole, clearConsole, getCodeInputString, runBtn } from './ui'
+import { appendConsole, clearConsole, getCodeInputString } from './ui'
 
 async function fetchDatabase(owner: string, branch: string): Promise<PackageDB> {
     const res = await fetch(`https://raw.githubusercontent.com/${owner}/CCModDB/${branch}/npDatabase.json`)
@@ -22,26 +22,21 @@ const databases = await getDatabases()
 const ccmodChecker = new CCModChecker(databases, test, expect)
 
 export async function run() {
-    runBtn.disabled = true
-    try {
-        const input = getCodeInputString()
-        if (!input) {
-            appendConsole('[ui] no input provided')
-            return
-        }
-
-        let ccmod: PkgCCMod
-        try {
-            ccmod = JSON.parse(input) as PkgCCMod
-        } catch (e) {
-            appendConsole('[ui] invalid JSON:', (e as Error).message)
-            return
-        }
-        clearConsole()
-        appendConsole(`[ui] running (${new Date().toLocaleString()})...`)
-        ccmodChecker.testMetadataCCMod(ccmod)
-        appendConsole('[ui] done')
-    } finally {
-        runBtn.disabled = false
+    const input = getCodeInputString()
+    if (!input) {
+        appendConsole('[ui] no input provided')
+        return
     }
+
+    let ccmod: PkgCCMod
+    try {
+        ccmod = JSON.parse(input) as PkgCCMod
+    } catch (e) {
+        appendConsole('[ui] invalid JSON:', (e as Error).message)
+        return
+    }
+    clearConsole()
+    appendConsole(`[ui] running (${new Date().toLocaleString()})...`)
+    ccmodChecker.testMetadataCCMod(ccmod)
+    appendConsole('[ui] done')
 }
