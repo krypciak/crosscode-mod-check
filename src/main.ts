@@ -1,10 +1,9 @@
 import type { PackageDB, PkgCCMod } from 'ccmoddb/build/src/types'
 import './style.css'
-import multiCCMod from './ccmod.json'
-import xenonsCCMod from './ccmod1.json'
-
+import './ui'
 import { CCModChecker } from 'ccmoddb/build/tests/ccmod-check'
 import { expect, test } from './test-functions'
+import { appendConsole, getCodeInputString, runBtn } from './ui'
 
 async function fetchDatabase(owner: string, branch: string): Promise<PackageDB> {
     const res = await fetch(`https://raw.githubusercontent.com/${owner}/CCModDB/${branch}/npDatabase.json`)
@@ -22,7 +21,27 @@ async function getDatabases(): Promise<PackageDB[]> {
 const databases = await getDatabases()
 const ccmodChecker = new CCModChecker(databases, test, expect)
 
-ccmodChecker.testMetadataCCMod(xenonsCCMod as PkgCCMod)
-ccmodChecker.testMetadataCCMod(multiCCMod as PkgCCMod)
+export async function run() {
+    runBtn.disabled = true
+    try {
+        const input = getCodeInputString()
+        if (!input) {
+            appendConsole('[ui] no input provided')
+            return
+        }
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = ` `
+        let ccmod: PkgCCMod
+        try {
+            ccmod = JSON.parse(input) as PkgCCMod
+        } catch (e) {
+            appendConsole('[ui] invalid JSON:', (e as Error).message)
+            return
+        }
+
+        appendConsole('[ui] running...')
+        ccmodChecker.testMetadataCCMod(ccmod)
+        appendConsole('[ui] done')
+    } finally {
+        runBtn.disabled = false
+    }
+}

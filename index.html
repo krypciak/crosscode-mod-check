@@ -1,13 +1,41 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>crosscode-mod-check</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>crosscode-mod-check</title>
+        <meta name="darkreader-lock" />
+    </head>
+    <body>
+        <main id="app">
+            <header>
+                <a
+                    class="gh-badge"
+                    href="https://github.com/krypciak/crosscode-mod-check"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <img src="https://img.shields.io/badge/github-repository-181717?logo=github" alt="GitHub" />
+                </a>
+            </header>
+            <div class="panels">
+                <section class="panel">
+                    <label>ccmod.json (input)</label>
+                    <div id="input-code" class="editor-mount"></div>
+                    <div class="row">
+                        <button id="upload-btn">upload .zip / .ccmod</button>
+                        <button id="run-btn">run</button>
+                        <input type="file" id="file-input" accept=".zip,.ccmod,.json" hidden />
+                    </div>
+                </section>
+            </div>
+
+            <section class="console-section">
+                <label>console</label>
+                <div id="console-output" class="editor-mount"></div>
+            </section>
+        </main>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
 </html>
