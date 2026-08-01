@@ -3,7 +3,7 @@ import './style.css'
 import './ui'
 import { CCModChecker } from 'ccmoddb/build/tests/ccmod-check'
 import { expect, test } from './test-functions'
-import { appendConsole, getCodeInputString, runBtn } from './ui'
+import { appendConsole, clearConsole, getCodeInputString, runBtn } from './ui'
 
 async function fetchDatabase(owner: string, branch: string): Promise<PackageDB> {
     const res = await fetch(`https://raw.githubusercontent.com/${owner}/CCModDB/${branch}/npDatabase.json`)
@@ -37,8 +37,8 @@ export async function run() {
             appendConsole('[ui] invalid JSON:', (e as Error).message)
             return
         }
-
-        appendConsole('[ui] running...')
+        clearConsole()
+        appendConsole(`[ui] running (${new Date().toLocaleString()})...`)
         ccmodChecker.testMetadataCCMod(ccmod)
         appendConsole('[ui] done')
     } finally {
