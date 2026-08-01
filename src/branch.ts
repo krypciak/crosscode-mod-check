@@ -39,6 +39,6 @@ export const stable = new Branch({
 export const testing = new Branch({
     owner: 'CCDirectLink',
     repoName: 'CCModDB',
-    branch: 'stable',
+    branch: 'testing',
     parent: stable,
 })

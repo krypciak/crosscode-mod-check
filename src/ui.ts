@@ -3,7 +3,7 @@ import { EditorState, Range, StateEffect, StateField, type Extension } from '@co
 import { Decoration, type DecorationSet } from '@codemirror/view'
 import { json } from '@codemirror/lang-json'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { unzipSync } from 'fflate'
+import { extractCcmod, type ExtractCcmodError } from './zip'
 import { run } from './main'
 
 // this is vibe coded af
@@ -13,7 +13,12 @@ const inputMount = document.querySelector<HTMLDivElement>('#input-code')!
 const uploadBtn = document.querySelector<HTMLButtonElement>('#upload-btn')!
 const fileInput = document.querySelector<HTMLInputElement>('#file-input')!
 
-function createEditor(parent: HTMLElement, editable: boolean, doc: string = '', extensions: Extension[] = []): EditorView {
+function createEditor(
+    parent: HTMLElement,
+    editable: boolean,
+    doc: string = '',
+    extensions: Extension[] = []
+): EditorView {
     return new EditorView({
         state: EditorState.create({
             doc,
@@ -121,9 +126,7 @@ export function clearConsole() {
 }
 
 export function appendConsole(...args: any[]) {
-    const line = args
-        .map(a => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)))
-        .join(' ') + '\n'
+    const line = args.map(a => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a))).join(' ') + '\n'
     const from = consoleEditor.state.doc.length
     const segments = parseAnsi(line)
     const insert = segments.map(s => s.text).join('')
@@ -176,6 +179,11 @@ function setInputText(text: string) {
     })
 }
 
+const EXTRACT_ERROR_MESSAGES: Record<ExtractCcmodError, string> = {
+    'ccmod-json-not-found': 'no ccmod.json found',
+    'ccmod-json-not-at-top-level': 'ccmod.json must be at the top level of the archive',
+}
+
 uploadBtn.addEventListener('click', () => fileInput.click())
 fileInput.addEventListener('change', async () => {
     const file = fileInput.files?.[0]
@@ -184,14 +192,14 @@ fileInput.addEventListener('change', async () => {
     const data = new Uint8Array(await file.arrayBuffer())
 
     if (file.name.endsWith('.zip') || file.name.endsWith('.ccmod')) {
-        const unzipped = unzipSync(data)
-        const ccmodPath = Object.keys(unzipped).find(path => path.replace(/\\/g, '/').split('/').pop() === 'ccmod.json')
-        if (!ccmodPath) {
-            appendConsole(`[ui] no ccmod.json found in ${file.name}`)
+        const isCCMod = file.name.endsWith('.ccmod')
+        const result = extractCcmod(data, isCCMod)
+        if (!result.ok) {
+            appendConsole(`[ui] \x1b[31m\u2717 ${EXTRACT_ERROR_MESSAGES[result.error]} in ${file.name}\x1b[0m`)
             return
         }
-        setInputText(new TextDecoder().decode(unzipped[ccmodPath]))
-        appendConsole(`[ui] loaded ${file.name} (${file.size} bytes): ${ccmodPath}`)
+        setInputText(result.ccmod.text)
+        appendConsole(`[ui] loaded ${file.name} (${file.size} bytes): ${result.ccmod.path}`)
     } else {
         setInputText(new TextDecoder().decode(data))
         appendConsole(`[ui] loaded ${file.name} (${file.size} bytes)`)
