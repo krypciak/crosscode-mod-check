@@ -7,9 +7,7 @@ export interface ExtractedCcmod {
 
 export type ExtractCcmodError = 'ccmod-json-not-found' | 'ccmod-json-not-at-top-level'
 
-export type ExtractCcmodResult =
-    | { ok: true; ccmod: ExtractedCcmod }
-    | { ok: false; error: ExtractCcmodError }
+export type ExtractCcmodResult = { ok: true; ccmod: ExtractedCcmod } | { ok: false; error: ExtractCcmodError }
 
 export function extractCcmod(data: Uint8Array, isCCMod: boolean): ExtractCcmodResult {
     const unzipped = unzipSync(data)
