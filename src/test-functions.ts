@@ -34,6 +34,7 @@ export const test: ConstructorParameters<typeof CCModChecker>[1] = (name, func) 
         }
     }
 }
+
 export const expect: ConstructorParameters<typeof CCModChecker>[2] = (value, error) => {
     return {
         toBeFalse() {
