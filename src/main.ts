@@ -1,25 +1,15 @@
 import type { PackageDB, PkgCCMod } from 'ccmoddb/build/src/types'
-import './style.css'
-import './ui'
 import { CCModChecker } from 'ccmoddb/build/tests/ccmod-check'
 import { expect, test } from './test-functions'
-import { appendConsole, clearConsole, getCodeInputString } from './ui'
+import { appendConsole, clearConsole, getCodeInputString, getDatabaseMode } from './ui'
+import { stable, testing } from './branch'
+import './style.css'
 
-async function fetchDatabase(owner: string, branch: string): Promise<PackageDB> {
-    const res = await fetch(`https://raw.githubusercontent.com/${owner}/CCModDB/${branch}/npDatabase.json`)
-    if (!res.ok) throw new Error(`Failed to fetch ${branch}: ${res.status}`)
-    return (await res.json()) as PackageDB
+async function getDatabases(mode: 'stable' | 'testing'): Promise<PackageDB[]> {
+    if (mode == 'stable') return stable.getDbs()
+    if (mode == 'testing') return testing.getDbs()
+    throw new Error()
 }
-
-async function getDatabases(): Promise<PackageDB[]> {
-    return Promise.all([
-        fetchDatabase('CCDirectLink', 'stable'),
-        // fetchDatabase('CCDirectLink', 'testing')
-    ])
-}
-
-const databases = await getDatabases()
-const ccmodChecker = new CCModChecker(databases, test, expect)
 
 export async function run() {
     const input = getCodeInputString()
@@ -36,6 +26,8 @@ export async function run() {
         return
     }
     clearConsole()
+    const databases = await getDatabases(getDatabaseMode())
+    const ccmodChecker = new CCModChecker(databases, test, expect)
     appendConsole(`[ui] running (${new Date().toLocaleString()})...`)
     ccmodChecker.testMetadataCCMod(ccmod)
     appendConsole('[ui] done')

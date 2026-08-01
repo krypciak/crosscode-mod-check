@@ -201,3 +201,9 @@ fileInput.addEventListener('change', async () => {
 export function getCodeInputString() {
     return inputEditor.state.doc.toString().trim()
 }
+
+export function getDatabaseMode(): 'stable' | 'testing' {
+    return document.querySelector<HTMLSelectElement>('#db-select')!.value as 'stable' | 'testing'
+}
+
+document.querySelector<HTMLSelectElement>('#db-select')!.addEventListener('change', () => run())
